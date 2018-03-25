@@ -1,0 +1,7 @@
+[
+{
+  "directory": "/home/duncan/Projects/Home/MENU/build",
+  "command": "/usr/bin/clang++   -I/home/duncan/Projects/Home/MENU/./include   -std=c++11    -o CMakeFiles/MENU.dir/src/main.cpp.o -c /home/duncan/Projects/Home/MENU/src/main.cpp",
+  "file": "/home/duncan/Projects/Home/MENU/src/main.cpp"
+}
+]
