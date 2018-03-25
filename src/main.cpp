@@ -8,44 +8,38 @@
 // Make this work for the real nodes
 // Serialization to a file using JSON or YAML or something
 // Make the whole thing a class
-struct Data {
+enum Action {
+	Up = 1,
+	Down = 2,
+};
+
+struct Node {
 	char name[256];
 	bool is_open;
-#define ELEM(NAME, TYPE, FORMAT) TYPE NAME;
-#include <config_elem.h>
-#undef ELEM
-	Data copy();
+	Action action;
+	Node copy();
 	void display(WINDOW *window, int &line, int selected_line);
 };
 
-Data Data::copy() {
-	Data instance;
+Node Node::copy() {
+	Node instance;
 	instance.is_open = false;
-#define ELEM(NAME, TYPE, FORMAT) instance.NAME = this->NAME;
-#include <config_elem.h>
-#undef ELEM
 	return instance;
 }
 
-void Data::display(WINDOW *window, int &line, int selected_line) {
+void Node::display(WINDOW *window, int &line, int selected_line) {
 	mvwprintw(window, line++, 1, "[%s] %s", is_open ? "-" : "+", name);
 	wattroff(window, A_STANDOUT);
 	if (is_open) {
+		mvwprintw(window, line++, 3, "Actions: %d", action);
 		char strbuf[100];
-#define ELEM(NAME, TYPE, FORMAT) \
-		bzero(strbuf, 100); \
-		sprintf(strbuf, FORMAT, NAME); \
-		if (line++ == selected_line) wattron(windw, A_STANDOUT); else wattroff(window, A_STANDOUT); \
-		mvwprintw(window, line, 3, "%s: %s", #NAME, strbuf);
-#include <config_elem.h>
-#undef ELEM
 	}
 }
 
 int main() {
-	std::vector<Data> things;
-	things.push_back({"Dank memes", false, 1.84392, 1.5});
-	things.push_back({"Sweet dreams", true, 9.48923, 1.3});
+	std::vector<Node> things;
+	things.push_back({"Dank memes", false});
+	things.push_back({"Sweet dreams", true});
 
 	/* Initialize curses */
 	initscr();
@@ -77,7 +71,7 @@ int main() {
 		}
 		int line = 1;
 		int thing_idx = 0;
-		for (std::vector<Data>::iterator it = things.begin();
+		for (std::vector<Node>::iterator it = things.begin();
 				it != things.end();) {
 			if (selected == thing_idx) {
 				wattron(window, A_STANDOUT);
