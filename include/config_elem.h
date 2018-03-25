@@ -1,2 +1,2 @@
-ELEM(one, float, "%s");
-ELEM(two, int, "%d");
+ELEM(one, float, "%f");
+ELEM(two, float, "%f");
