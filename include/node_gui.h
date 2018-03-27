@@ -7,6 +7,7 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 
+#undef OK
 #include <opencv2/opencv.hpp>
 
 class NodeGui {
@@ -16,5 +17,6 @@ class NodeGui {
 		};
 		void update();
 	private:
+		std::vector<Node>* nodes;
 		void init();
 };

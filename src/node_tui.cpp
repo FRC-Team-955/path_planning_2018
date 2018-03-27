@@ -41,36 +41,41 @@ bool NodeTui::update() {
 		case 'l':
 			sel_horizontal++;
 			break;
-		case KEY_RESIZE: //TODO: impl!
+		case 'a': 
+			nodes->push_back({"New node"});
 			break;
 	}
 	draw_vertical = 0;
 	draw_horizontal = 0;
-	for (auto& node : *nodes) {
-		next_line(0, 0);
-		if (pressed('i')) {
-			nodes->push_back({"New Node"});
+	auto node = nodes->begin();
+	while (node != nodes->end()) {
+		next_line(1, 1);
+		if (pressed('d')) {
+			nodes->erase(node--);
 		}
-		edit_node(&node);
-		if (node.is_open) {
+		node->is_open ^= pressed('\n'); //Toggle being expanded with enter key
+		selectable_string((char*)(node->is_open ? "[-]" : "[+]")); //Print the name, and [+] if closed and [-] if open
+		edit_string(node->name);
+
+		if (node->is_open) {
 			draw_idx_horizontal = 0;
 			draw_horizontal = 3;
 			next_line(0, 3);
 			wattrset(curses_window, am_selected() ? A_STANDOUT : !A_STANDOUT); //If selected, highlight
 			mvwprintw(curses_window, draw_vertical, draw_horizontal, "Actions:");
 			if (pressed('i')) {
-				node.actions.push_back({0.0});
+				node->actions.push_back({0.0});
 			}
 			draw_idx_horizontal++;
 
-			auto action = std::begin(node.actions);
-			while (action != std::end(node.actions)) {
+			auto action = std::begin(node->actions);
+			while (action != std::end(node->actions)) {
 				draw_horizontal = 4;
 				next_line(4, 7);
 				if (pressed('d')) {
-					node.actions.erase(action);
+					node->actions.erase(action);
 				} else {
-					if (node.actions.size() > 0) {
+					if (node->actions.size() > 0) {
 						edit_number(action->index);
 						edit_bitflag((char*)"Up", Action::Up, (int&)action->action);
 						edit_bitflag((char*)"Down", Action::Down, (int&)action->action);
@@ -83,14 +88,15 @@ bool NodeTui::update() {
 			draw_horizontal = 3;
 			next_line(0, 3);
 			string((char*)"linger: ");
-			edit_number(node.linger_time);
+			edit_number(node->linger_time);
 
 			next_line(2, 3);
 			string((char*)"speeds: ");
-			edit_number(node.speed_in);
-			edit_number(node.speed_center);
-			edit_number(node.speed_out);
+			edit_number(node->speed_in);
+			edit_number(node->speed_center);
+			edit_number(node->speed_out);
 		}
+		node++;
 	}
 	wattrset(curses_window, A_NORMAL);
 	wrefresh(curses_window);
@@ -113,12 +119,6 @@ void NodeTui::next_line(int items, int indent) {
 
 bool NodeTui::pressed(int keycode) {
 	return kbd_input_latest == keycode && am_selected();
-}
-
-void NodeTui::edit_node(Node* node) {
-	node->is_open ^= pressed('\n'); //Toggle being expanded with enter key
-	wattrset(curses_window, am_selected() ? A_STANDOUT : !A_STANDOUT); //If selected, highlight
-	mvwprintw(curses_window, draw_vertical, 1, "[%s] %s", node->is_open ? "-" : "+", node->name); //Print the name, and [+] if closed and [-] if open
 }
 
 void NodeTui::edit_number(float& number) {
