@@ -35,9 +35,12 @@ class PathEditor {
 
 		void tui_edit_node(Node* node);
 		void tui_edit_action(TimedAction* action);
-		void tui_edit_number(char* name, float& number);
+		void tui_edit_number(float& number);
+		void tui_edit_string(char* input);
+		void tui_string(char* input);
+		void tui_selectable_string(char* input);
 		void tui_edit_bitflag(char* name, int flag, int& flagedit);
-		void tui_next_line(int items);
+		void tui_next_line(int items, int indent);
 		bool tui_am_selected();
 		bool tui_pressed(int keycode);
 };
