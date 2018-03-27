@@ -17,11 +17,12 @@ class PathEditor {
 		std::vector<Node>* nodes;
 		WINDOW *tui_curses_window;
 
-		int tui_sel_vertical;
-		int tui_sel_horizontal;
+		int tui_sel_vertical; //Selection y position
+		int tui_sel_horizontal; //Selection x position
 
-		int tui_draw_vertical;
-		int tui_draw_horizontal;
+		int tui_draw_vertical; //Cursor x position
+		int tui_draw_horizontal; //Cursor y positon
+		int tui_draw_idx_horizontal; //Drawing x position
 
 		int kbd_input_latest;
 
@@ -35,5 +36,8 @@ class PathEditor {
 		void tui_edit_node(Node* node);
 		void tui_edit_action(TimedAction* action);
 		void tui_edit_number(char* name, float& number);
-		void tui_edit_bitflag(char* name, int& flag, int& flagedit);
+		void tui_edit_bitflag(char* name, int flag, int& flagedit);
+		void tui_next_line(int items);
+		bool tui_am_selected();
+		bool tui_pressed(int keycode);
 };
