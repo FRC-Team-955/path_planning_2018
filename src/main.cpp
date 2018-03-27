@@ -2,6 +2,7 @@
 #include <string.h>
 #include <vector>
 #include <node_tui.h>
+#include <node_gui.h>
 
 // TODO
 // JSON serialization/deserialization
