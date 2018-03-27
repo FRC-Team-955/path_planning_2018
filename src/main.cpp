@@ -4,10 +4,12 @@
 #include <path_editor.h>
 
 // TODO
-// Add an inset mode for adding new elements (Somehow, outside of the loop...?!)
-// Make this work for the real nodes
-// Serialization to a file using JSON or YAML or something
-// Make the whole thing a class
+// JSON serialization/deserialization
+// OpenGL/GLUT interface
+// Command line arg for file name (turns on editor..?)
+// Actually put the field and robot tank drive equations in
+// REAL TIME EDITING!!!!!!!
+// Nonblocking input
 
 
 int main() {
