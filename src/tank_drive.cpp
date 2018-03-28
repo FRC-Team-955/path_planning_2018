@@ -1,42 +1,52 @@
 #include <tank_drive.h>
 
-float TankDrive::evaluate (ParametricOutput parametric, TankDrive::TankOutput& output, float max_velocity, float dt, float wheel_distance) {
-	//Position = center + (perpendicular vector * d)
+float TankDrive::evaluate(ParametricOutput parametric,
+		TankDrive::TankOutput &output, float max_velocity,
+		float dt, float wheel_distance) {
+	// Position = center + (perpendicular vector * d)
 	output.center_position = parametric.position;
-	output.left_position = parametric.position + (wheel_distance * parametric.perpendicular_unit_vector_xy());
-	output.right_position = parametric.position - (wheel_distance * parametric.perpendicular_unit_vector_xy());
+	output.left_position =
+		parametric.position +
+		(wheel_distance * parametric.perpendicular_unit_vector_xy());
+	output.right_position =
+		parametric.position -
+		(wheel_distance * parametric.perpendicular_unit_vector_xy());
 
-	//How far in position we expect to go over dj
-	cv::Point2f chage_pos_left = (parametric.velocity) + (wheel_distance * parametric.perpendicular_unit_vector_derivative_xy());
-	cv::Point2f chage_pos_right = (parametric.velocity) - (wheel_distance * parametric.perpendicular_unit_vector_derivative_xy());
+	// How far in position we expect to go over dj
+	cv::Point2f chage_pos_left =
+		(parametric.velocity) +
+		(wheel_distance * parametric.perpendicular_unit_vector_derivative_xy());
+	cv::Point2f chage_pos_right =
+		(parametric.velocity) -
+		(wheel_distance * parametric.perpendicular_unit_vector_derivative_xy());
 
-	//Magnitude of change in position of the above over dj
+	// Magnitude of change in position of the above over dj
 	float dp_dj_left = cv::norm(chage_pos_left);
 	float dp_dj_right = cv::norm(chage_pos_right);
 
-	//Find dj for the time step
+	// Find dj for the time step
 	float largest_dp_dj = std::max(dp_dj_left, dp_dj_right);
 	float max_dp = max_velocity * dt;
 	float dj = (max_dp / largest_dp_dj);
 
-	//Distances travelled per dt
+	// Distances travelled per dt
 	float dp_left = (dj * dp_dj_left);
 	float dp_right = (dj * dp_dj_right);
 
-	//Assign velocities
+	// Assign velocities
 	output.motion.velocity_left = dp_left / dt;
 	output.motion.velocity_right = dp_right / dt;
 
-	//Increment positions
+	// Increment positions
 	output.motion.position_left += dp_left;
 	output.motion.position_right += dp_right;
 
-	//Robot heading
+	// Robot heading
 	output.robot_direction = parametric.direction_xy();
 
-	//We are turning too hard, one side will have to reverse
-	//Determined by the normal of each wheel's trajectory not being within 90 degrees
-	//of the trajectory of the robot center (It's reversing)
+	// We are turning too hard, one side will have to reverse
+	// Determined by the normal of each wheel's trajectory not being within 90
+	// degrees of the trajectory of the robot center (It's reversing)
 	float direction_left = atan2(chage_pos_left.y, chage_pos_left.x);
 	float direction_right = atan2(chage_pos_right.y, chage_pos_right.x);
 	if (fabs(direction_left - output.robot_direction) > M_PI / 2.0)
@@ -45,18 +55,25 @@ float TankDrive::evaluate (ParametricOutput parametric, TankDrive::TankOutput& o
 	if (fabs(direction_right - output.robot_direction) > M_PI / 2.0)
 		output.motion.velocity_right *= -1.0;
 
-	//How far along the spline we advanced
+	// How far along the spline we advanced
 	return dj;
 }
 
-bool TankDrive::Traversal::next(TankDrive::TankOutput& output, float dt) {
-	if (node != node_end) {
-		index += TankDrive::evaluate(node->spline(&*(node + 1), index), output, node->speed_ramp(&*(node + 1), index), dt, wheel_distance);	
-		if ((index > 1.0 && !node->reverse) && (index < 0.0 && node->reverse)) {
-			index = (node++)->reverse ? 1.0 : 0.0;
+bool TankDrive::Traversal::next(TankDrive::TankOutput &output, float dt) {
+	time_s += dt;
+	index += TankDrive::evaluate(current_node->spline(next_node, index), output,
+			current_node->speed_ramp(next_node, index) *
+			(current_node->reverse ? -1.0 : 1.0),
+			dt, wheel_distance);
+	if ((index > 1.0 && !current_node->reverse) ||
+			(index < 0.0 && current_node->reverse)) {
+		if (next_node != end_node) {
+			current_node = next_node;
+			next_node++;
+			index = (current_node)->reverse ? 1.0 : 0.0;
+		} else {
+			return false;
 		}
-		return node != node_end;
-	} else {
-		return false;
 	}
+	return current_node != end_node;
 }

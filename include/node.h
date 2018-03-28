@@ -5,6 +5,7 @@
 #include <opencv2/opencv.hpp>
 #include <parametric_output.h>
 #include <spline.h>
+#include <vector>
 
 enum Action {
 	Up = 1,
@@ -41,8 +42,11 @@ class Node {
 		void set_center_ctrlpt(cv::Point2f new_position);
 		void set_closest_component(cv::Point2f new_position);
 		float get_distance_to_closest_component(cv::Point2f input_position);
-		ParametricOutput spline(Node* node, float j);
-		float speed_ramp(Node* node, float j);
+
+		ParametricOutput spline(std::vector<Node>::iterator node, float j);
+		ParametricOutput spline(Node& node, float j);
+		float speed_ramp(std::vector<Node>::iterator node, float j);
+		float speed_ramp(Node& node, float j);
 		// TODO:
 		// void serialize(JsonNode& node)
 		// Node(JsonNode& node)

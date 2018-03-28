@@ -85,31 +85,6 @@ void NodeGui::update(std::vector<Node>& nodes) {
 		glVertex2f(node->position.x - sidelen, node->position.y + sidelen);
 		glEnd();
 
-		if (node < nodes.end() - 1) {
-			glBegin(GL_LINES);
-			TankDrive::TankOutput output;
-			cv::Point2f last_left = node->position;
-			cv::Point2f last_right = node->position;
-			float i = 0.01;
-			unsigned int iters = 0;
-			while (i < 1.0 && iters < 10000) {
-				i += TankDrive::evaluate(node->spline(&*(node + 1), i), output, node->speed_ramp(&*(node + 1), i), 10.0, wheel_distance);
-				if (iters > 0) {
-					color_by(output.motion.velocity_left);
-					glVertex2f(output.left_position.x, output.left_position.y);
-					glVertex2f(last_left.x, last_left.y);
-
-					color_by(output.motion.velocity_right);
-					glVertex2f(output.right_position.x, output.right_position.y);
-					glVertex2f(last_right.x, last_right.y);
-				}
-
-				last_left = output.left_position;
-				last_right = output.right_position;
-				iters++;
-			}
-			glEnd();
-		}
 
 		//TODO: Remove this macro, eww
 #define DRAW_SEGMENT(NAME)                                                         \
@@ -135,6 +110,29 @@ void NodeGui::update(std::vector<Node>& nodes) {
 		glColor3f(1.0, 1.0, 1.0);
 		draw_string(node->position, node->name);
 	} while (++node != nodes.end()); 
+
+	TankDrive::Traversal trav (nodes.begin(), nodes.end(), 635.0);
+	glBegin(GL_LINES);
+	TankDrive::TankOutput output;
+	cv::Point2f last_left = node->position;
+	cv::Point2f last_right = node->position;
+	unsigned int iters = 0;
+	while (iters < 5000 && trav.next(output, 10.0)) {
+		if (iters > 0) {
+			color_by(output.motion.velocity_left);
+			glVertex2f(output.left_position.x, output.left_position.y);
+			glVertex2f(last_left.x, last_left.y);
+
+			color_by(output.motion.velocity_right);
+			glVertex2f(output.right_position.x, output.right_position.y);
+			glVertex2f(last_right.x, last_right.y);
+		}
+
+		last_left = output.left_position;
+		last_right = output.right_position;
+		iters++;
+	}
+	glEnd();
 
 	if (mouse_active_b) {
 		if (movednode) {
