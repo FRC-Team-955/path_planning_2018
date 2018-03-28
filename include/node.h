@@ -17,7 +17,11 @@ enum Action {
 struct TimedAction {
 	float time;
 	Action action;
+	bool operator< (const TimedAction &other) const {
+		return time < other.time;
+	}
 };
+
 
 class Node {
 	public:

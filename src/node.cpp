@@ -93,7 +93,6 @@ ParametricOutput Node::spline(Node& other, float j) {
 	}
 }
 
-
 float Node::speed_ramp(std::vector<Node>::iterator other, float j) {
 	if (reverse) {
 		return Spline::spline_f(
@@ -125,3 +124,4 @@ ParametricOutput Node::spline(std::vector<Node>::iterator other, float j) {
 				other->get_center_ctrlpt(), j);
 	}
 }
+

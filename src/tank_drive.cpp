@@ -77,3 +77,9 @@ bool TankDrive::Traversal::next(TankDrive::TankOutput &output, float dt) {
 	}
 	return current_node != end_node;
 }
+
+void TankDrive::Traversal::reset() {
+	current_node = begin;
+	next_node = begin + 1;
+	index = (current_node)->reverse ? 1.0 : 0.0;
+}

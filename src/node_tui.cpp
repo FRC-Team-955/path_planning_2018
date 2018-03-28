@@ -49,73 +49,79 @@ bool NodeTui::update(std::vector<Node>& nodes) {
 		}
 		draw_vertical = 0;
 		draw_horizontal = 0;
-		auto node = nodes.begin();
-		do {
-			next_line(1, 1);
-			if (pressed('d')) {
-				nodes.erase(node--);
-			}
-			edit_bool(node->is_open, (char*)"[-]", (char*)"[+]");
-			edit_string(node->name);
-
-			if (node->is_open) {
-				draw_idx_horizontal = 0;
-				draw_horizontal = 3;
-				next_line(0, 3);
-				wattrset(curses_window, am_selected() ? A_STANDOUT : !A_STANDOUT); //If selected, highlight
-				mvwprintw(curses_window, draw_vertical, draw_horizontal, "Actions:");
-				if (pressed('i')) { //TODO: USE A REAL CONSTRUCTOR!!!
-					node->actions.push_back({0.0});
+		if (nodes.size() > 0) {
+			auto node = nodes.begin();
+			do {
+				next_line(1, 1);
+				if (pressed('d')) {
+					nodes.erase(node--);
 				}
-				draw_idx_horizontal++;
+				if (nodes.size() > 0) {
+					edit_bool(node->is_open, (char*)"[-]", (char*)"[+]");
+					edit_string(node->name);
 
-				auto action = std::begin(node->actions);
-				while (action != std::end(node->actions)) {
-					draw_horizontal = 4;
-					next_line(4, 7);
-					if (pressed('d')) {
-						node->actions.erase(action);
-					} else {
-						if (node->actions.size() > 0) {
-							edit_number(action->time);
-							edit_bitflag((char*)"Up", Action::Up, (int&)action->action);
-							edit_bitflag((char*)"Down", Action::Down, (int&)action->action);
-							edit_bitflag((char*)"Expel", Action::Intake_Expel, (int&)action->action);
-							edit_bitflag((char*)"In", Action::Intake_In, (int&)action->action);
+					if (node->is_open) {
+						draw_idx_horizontal = 0;
+						draw_horizontal = 3;
+						next_line(0, 3);
+						wattrset(curses_window, am_selected() ? A_STANDOUT : !A_STANDOUT); //If selected, highlight
+						mvwprintw(curses_window, draw_vertical, draw_horizontal, "Actions:");
+						if (pressed('i')) { //TODO: USE A REAL CONSTRUCTOR!!!
+							node->actions.push_back({0.0});
 						}
-						++action;
+						draw_idx_horizontal++;
+
+						auto action = std::begin(node->actions);
+						while (action != std::end(node->actions)) {
+							draw_horizontal = 4;
+							next_line(4, 7);
+							if (pressed('d')) {
+								node->actions.erase(action);
+							} else {
+								if (node->actions.size() > 0) {
+									edit_number(action->time);
+									edit_bitflag((char*)"Up", Action::Up, (int&)action->action);
+									edit_bitflag((char*)"Down", Action::Down, (int&)action->action);
+									edit_bitflag((char*)"Expel", Action::Intake_Expel, (int&)action->action);
+									edit_bitflag((char*)"In", Action::Intake_In, (int&)action->action);
+								}
+								++action;
+							}
+						}
+						draw_horizontal = 3;
+						next_line(0, 3);
+						string((char*)"linger: ");
+						edit_number(node->linger_time);
+
+						next_line(2, 3);
+						string((char*)"speeds: ");
+						edit_number(node->speed_in);
+						edit_number(node->speed_center);
+						edit_number(node->speed_out);
+
+						next_line(1, 3);
+						string((char*)"position: ");
+						edit_number(node->position.x);
+						edit_number(node->position.y);
+
+						next_line(1, 3);
+						string((char*)"lengths: ");
+						edit_number(node->length_in);
+						edit_number(node->length_out);
+
+						next_line(0, 3);
+						string((char*)"direction: ");
+						edit_number(node->direction);
+
+						next_line(0, 3);
+						string((char*)"reverse: ");
+						edit_bool(node->reverse, (char*)"true", (char*)"false");
 					}
+					//TODO: Don't do this every loop
+					std::sort(node->actions.begin(), node->actions.end());
 				}
-				draw_horizontal = 3;
-				next_line(0, 3);
-				string((char*)"linger: ");
-				edit_number(node->linger_time);
-
-				next_line(2, 3);
-				string((char*)"speeds: ");
-				edit_number(node->speed_in);
-				edit_number(node->speed_center);
-				edit_number(node->speed_out);
-
-				next_line(1, 3);
-				string((char*)"position: ");
-				edit_number(node->position.x);
-				edit_number(node->position.y);
-
-				next_line(1, 3);
-				string((char*)"lengths: ");
-				edit_number(node->length_in);
-				edit_number(node->length_out);
-
-				next_line(0, 3);
-				string((char*)"direction: ");
-				edit_number(node->direction);
-
-				next_line(0, 3);
-				string((char*)"reverse: ");
-				edit_bool(node->reverse, (char*)"true", (char*)"false");
-			}
-		} while (++node != nodes.end());
+			} while (++node != nodes.end());
+		}
 		wattrset(curses_window, A_NORMAL);
 		wrefresh(curses_window);
 	}

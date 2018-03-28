@@ -73,66 +73,68 @@ void NodeGui::update(std::vector<Node>& nodes) {
 
 	float smalldist = 999999.0;
 	Node *tempnode = nullptr;
-	auto node = nodes.begin();
-	do {
-		glColor3f(1.0, 1.0, 1.0);
+	if (nodes.size() > 0) {
+		auto node = nodes.begin();
+		do {
+			glColor3f(1.0, 1.0, 1.0);
 
-		glBegin(GL_POLYGON);
-		const float sidelen = 25.0;
-		glVertex2f(node->position.x + sidelen, node->position.y + sidelen);
-		glVertex2f(node->position.x + sidelen, node->position.y - sidelen);
-		glVertex2f(node->position.x - sidelen, node->position.y - sidelen);
-		glVertex2f(node->position.x - sidelen, node->position.y + sidelen);
-		glEnd();
+			glBegin(GL_POLYGON);
+			const float sidelen = 25.0;
+			glVertex2f(node->position.x + sidelen, node->position.y + sidelen);
+			glVertex2f(node->position.x + sidelen, node->position.y - sidelen);
+			glVertex2f(node->position.x - sidelen, node->position.y - sidelen);
+			glVertex2f(node->position.x - sidelen, node->position.y + sidelen);
+			glEnd();
 
 
-		//TODO: Remove this macro, eww
+			//TODO: Remove this macro, eww
 #define DRAW_SEGMENT(NAME)                                                         \
-		cv::Point2f NAME = node->get_##NAME##_ctrlpt();                              \
-		glBegin(GL_LINES);                                                           \
-		glVertex2f(node->position.x, node->position.y);                              \
-		glVertex2f(NAME.x, NAME.y);                                                  \
-		glEnd();
+			cv::Point2f NAME = node->get_##NAME##_ctrlpt();                              \
+			glBegin(GL_LINES);                                                           \
+			glVertex2f(node->position.x, node->position.y);                              \
+			glVertex2f(NAME.x, NAME.y);                                                  \
+			glEnd();
 
-		if (node->is_open) {
-			glColor3f(1.0, 0.1, 0.1);
-			DRAW_SEGMENT(in);
-			glColor3f(0.1, 1.0, 0.1);
-			DRAW_SEGMENT(out);
-			float dist = node->get_distance_to_closest_component(mouse);
-			if (dist < smalldist) {
-				smalldist = dist;
-				tempnode = &*node;
+			if (node->is_open) {
+				glColor3f(1.0, 0.1, 0.1);
+				DRAW_SEGMENT(in);
+				glColor3f(0.1, 1.0, 0.1);
+				DRAW_SEGMENT(out);
+				float dist = node->get_distance_to_closest_component(mouse);
+				if (dist < smalldist) {
+					smalldist = dist;
+					tempnode = &*node;
+				}
 			}
-		}
 #undef DRAW_SEGMENT
 
-		glColor3f(1.0, 1.0, 1.0);
-		draw_string(node->position, node->name);
-	} while (++node != nodes.end()); 
+			glColor3f(1.0, 1.0, 1.0);
+			draw_string(node->position, node->name);
+		} while (++node != nodes.end()); 
 
-	TankDrive::Traversal trav (nodes.begin(), nodes.end(), 635.0);
-	glBegin(GL_LINES);
-	TankDrive::TankOutput output;
-	cv::Point2f last_left = node->position;
-	cv::Point2f last_right = node->position;
-	unsigned int iters = 0;
-	while (iters < 5000 && trav.next(output, 10.0)) {
-		if (iters > 1 && iters != 5000) {
-			color_by(output.motion.velocity_left);
-			glVertex2f(output.left_position.x, output.left_position.y);
-			glVertex2f(last_left.x, last_left.y);
+		TankDrive::Traversal trav (nodes.begin(), nodes.end(), 635.0);
+		glBegin(GL_LINES);
+		TankDrive::TankOutput output;
+		cv::Point2f last_left = node->position;
+		cv::Point2f last_right = node->position;
+		unsigned int iters = 0;
+		while (iters < 5000 && trav.next(output, 10.0)) {
+			if (iters > 1 && iters != 5000) {
+				color_by(output.motion.velocity_left);
+				glVertex2f(output.left_position.x, output.left_position.y);
+				glVertex2f(last_left.x, last_left.y);
 
-			color_by(output.motion.velocity_right);
-			glVertex2f(output.right_position.x, output.right_position.y);
-			glVertex2f(last_right.x, last_right.y);
+				color_by(output.motion.velocity_right);
+				glVertex2f(output.right_position.x, output.right_position.y);
+				glVertex2f(last_right.x, last_right.y);
+			}
+
+			last_left = output.left_position;
+			last_right = output.right_position;
+			iters++;
 		}
-
-		last_left = output.left_position;
-		last_right = output.right_position;
-		iters++;
+		glEnd();
 	}
-	glEnd();
 
 	if (mouse_active_b) {
 		if (movednode) {
