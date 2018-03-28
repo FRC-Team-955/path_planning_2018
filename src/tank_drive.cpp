@@ -48,3 +48,15 @@ float TankDrive::evaluate (ParametricOutput parametric, TankDrive::TankOutput& o
 	//How far along the spline we advanced
 	return dj;
 }
+
+bool TankDrive::Traversal::next(TankDrive::TankOutput& output, float dt) {
+	if (node != node_end) {
+		index += TankDrive::evaluate(node->spline(&*(node + 1), index), output, node->speed_ramp(&*(node + 1), index), dt, wheel_distance);	
+		if ((index > 1.0 && !node->reverse) && (index < 0.0 && node->reverse)) {
+			index = (node++)->reverse ? 1.0 : 0.0;
+		}
+		return node != node_end;
+	} else {
+		return false;
+	}
+}

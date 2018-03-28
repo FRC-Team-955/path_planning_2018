@@ -5,11 +5,14 @@
 #include <node_gui.h>
 
 // TODO
-// Reverse paths
 // Traversal using iterators and time for actions
+//       Reverse paths are marked with red (Is a result of traversal)
 // JSON serialization/deserialization
 // Command line arg for file name (turns on tui..?)
-
+//    0 arg = headless + default socket name
+//    1 arg = tui edit
+//    2 arg = tui edit + custom socket name
+// Sockets and real traversal
 
 int main() {
 	std::vector<Node> nodes;
