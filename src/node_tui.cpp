@@ -9,97 +9,117 @@ void NodeTui::init() {
 	start_color(); //Enable color
 	cbreak(); //Stop normal character IO
 	noecho(); //Don't show what is typed
-	keypad(stdscr, TRUE); //Enable keyboard
+	for (int i = 0; i < 10; i++) //Sometimes it doesn't enable right
+		keypad(stdscr, true); //Enable keyboard
 	curs_set(0); //Down't show the cursor
-	//nodelay(stdscr, true); //Non-blocking input
+	nodelay(stdscr, true); //Non-blocking input
 	curses_window = newwin(25, 50, 0, 0); //Create a new curses window TODO: Configurable size?
 }
 
 bool NodeTui::update() {
 	kbd_input_latest = getch();
-	wclear(curses_window);
-	box(curses_window, 0, 0);
-	switch (kbd_input_latest) {
-		case KEY_UP: //TODO: Make sure those work in the GLUT keyboard func
-		case 'k':
-			if (sel_vertical > 1)
-				sel_vertical--;
-			break;
+	if (kbd_input_latest != ERR) {
+		wclear(curses_window);
+		box(curses_window, 0, 0);
+		switch (kbd_input_latest) {
+			case KEY_UP: //TODO: Make sure those work in the GLUT keyboard func
+			case 'k':
+				if (sel_vertical > 1)
+					sel_vertical--;
+				break;
 
-		case KEY_DOWN:
-		case 'j':
-			sel_vertical++;
-			break;
+			case KEY_DOWN:
+			case 'j':
+				sel_vertical++;
+				break;
 
-		case KEY_LEFT:
-		case 'h':
-			if (sel_horizontal > 0)
-				sel_horizontal--;
-			break;
+			case KEY_LEFT:
+			case 'h':
+				if (sel_horizontal > 0)
+					sel_horizontal--;
+				break;
 
-		case KEY_RIGHT:
-		case 'l':
-			sel_horizontal++;
-			break;
-		case 'a': 
-			nodes->push_back({"New node"});
-			break;
-	}
-	draw_vertical = 0;
-	draw_horizontal = 0;
-	auto node = nodes->begin();
-	while (node != nodes->end()) {
-		next_line(1, 1);
-		if (pressed('d')) {
-			nodes->erase(node--);
+			case KEY_RIGHT:
+			case 'l':
+				sel_horizontal++;
+				break;
+			case 'a': 
+				nodes->push_back({"New node", 1000.0, 1000.0, true});
+				break;
 		}
-		node->is_open ^= pressed('\n'); //Toggle being expanded with enter key
-		selectable_string((char*)(node->is_open ? "[-]" : "[+]")); //Print the name, and [+] if closed and [-] if open
-		edit_string(node->name);
-
-		if (node->is_open) {
-			draw_idx_horizontal = 0;
-			draw_horizontal = 3;
-			next_line(0, 3);
-			wattrset(curses_window, am_selected() ? A_STANDOUT : !A_STANDOUT); //If selected, highlight
-			mvwprintw(curses_window, draw_vertical, draw_horizontal, "Actions:");
-			if (pressed('i')) {
-				node->actions.push_back({0.0});
+		draw_vertical = 0;
+		draw_horizontal = 0;
+		auto node = nodes->begin();
+		while (node != nodes->end()) {
+			next_line(1, 1);
+			if (pressed('d')) {
+				nodes->erase(node--);
 			}
-			draw_idx_horizontal++;
+			edit_bool(node->is_open, (char*)"[-]", (char*)"[+]");
+			edit_string(node->name);
 
-			auto action = std::begin(node->actions);
-			while (action != std::end(node->actions)) {
-				draw_horizontal = 4;
-				next_line(4, 7);
-				if (pressed('d')) {
-					node->actions.erase(action);
-				} else {
-					if (node->actions.size() > 0) {
-						edit_number(action->index);
-						edit_bitflag((char*)"Up", Action::Up, (int&)action->action);
-						edit_bitflag((char*)"Down", Action::Down, (int&)action->action);
-						edit_bitflag((char*)"Expel", Action::Intake_Expel, (int&)action->action);
-						edit_bitflag((char*)"In", Action::Intake_In, (int&)action->action);
-					}
-					++action;
+			if (node->is_open) {
+				draw_idx_horizontal = 0;
+				draw_horizontal = 3;
+				next_line(0, 3);
+				wattrset(curses_window, am_selected() ? A_STANDOUT : !A_STANDOUT); //If selected, highlight
+				mvwprintw(curses_window, draw_vertical, draw_horizontal, "Actions:");
+				if (pressed('i')) {
+					node->actions.push_back({0.0});
 				}
-			}
-			draw_horizontal = 3;
-			next_line(0, 3);
-			string((char*)"linger: ");
-			edit_number(node->linger_time);
+				draw_idx_horizontal++;
 
-			next_line(2, 3);
-			string((char*)"speeds: ");
-			edit_number(node->speed_in);
-			edit_number(node->speed_center);
-			edit_number(node->speed_out);
+				auto action = std::begin(node->actions);
+				while (action != std::end(node->actions)) {
+					draw_horizontal = 4;
+					next_line(4, 7);
+					if (pressed('d')) {
+						node->actions.erase(action);
+					} else {
+						if (node->actions.size() > 0) {
+							edit_number(action->time);
+							edit_bitflag((char*)"Up", Action::Up, (int&)action->action);
+							edit_bitflag((char*)"Down", Action::Down, (int&)action->action);
+							edit_bitflag((char*)"Expel", Action::Intake_Expel, (int&)action->action);
+							edit_bitflag((char*)"In", Action::Intake_In, (int&)action->action);
+						}
+						++action;
+					}
+				}
+				draw_horizontal = 3;
+				next_line(0, 3);
+				string((char*)"linger: ");
+				edit_number(node->linger_time);
+
+				next_line(2, 3);
+				string((char*)"speeds: ");
+				edit_number(node->speed_in);
+				edit_number(node->speed_center);
+				edit_number(node->speed_out);
+
+				next_line(1, 3);
+				string((char*)"position: ");
+				edit_number(node->position.x);
+				edit_number(node->position.y);
+
+				next_line(1, 3);
+				string((char*)"lengths: ");
+				edit_number(node->length_in);
+				edit_number(node->length_out);
+
+				next_line(0, 3);
+				string((char*)"direction: ");
+				edit_number(node->direction);
+
+				next_line(0, 3);
+				string((char*)"reverse: ");
+				edit_bool(node->reverse, (char*)"true", (char*)"false");
+			}
+			node++;
 		}
-		node++;
+		wattrset(curses_window, A_NORMAL);
+		wrefresh(curses_window);
 	}
-	wattrset(curses_window, A_NORMAL);
-	wrefresh(curses_window);
 	return kbd_input_latest != 'q';
 }
 
@@ -126,7 +146,9 @@ void NodeTui::edit_number(float& number) {
 	if (pressed('\n')) {
 		wrefresh(curses_window);
 		echo(); curs_set(1);
+		nodelay(stdscr, false);
 		mvgetstr(draw_vertical, draw_horizontal, number_buffer);
+		nodelay(stdscr, true);
 		noecho(); curs_set(0); \
 			number = atof(number_buffer);
 	}
@@ -141,7 +163,9 @@ void NodeTui::edit_string(char* input) {
 	if (pressed('\n')) {
 		wrefresh(curses_window);
 		echo(); curs_set(1);
+		nodelay(stdscr, false);
 		mvgetstr(draw_vertical, draw_horizontal, input);
+		nodelay(stdscr, true);
 		noecho(); curs_set(0); \
 	}
 	selectable_string(input);
@@ -168,6 +192,11 @@ void NodeTui::edit_bitflag(char* name, int flag, int& flagedit) {
 	mvwprintw(curses_window, draw_vertical, draw_horizontal, "%s", name);
 	draw_horizontal += strlen(name) + 1;
 	draw_idx_horizontal++;
+}
+
+void NodeTui::edit_bool(bool& input, char* if_true, char* if_false) {
+	input ^= pressed('\n');
+	selectable_string((char*)(input ? if_true : if_false));
 }
 
 NodeTui::~NodeTui() {

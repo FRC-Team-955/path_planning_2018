@@ -17,12 +17,12 @@ class NodeTui {
 		std::vector<Node>* nodes;
 		WINDOW *curses_window;
 
-		int sel_vertical; //Selection y position
-		int sel_horizontal; //Selection x position
+		int sel_vertical = 0; //Selection y position
+		int sel_horizontal = 0; //Selection x position
 
-		int draw_vertical; //Cursor x position
-		int draw_horizontal; //Cursor y positon
-		int draw_idx_horizontal; //Drawing x position
+		int draw_vertical = 0; //Cursor x position
+		int draw_horizontal = 0; //Cursor y positon
+		int draw_idx_horizontal = 0; //Drawing x position
 
 		int kbd_input_latest;
 
@@ -32,6 +32,7 @@ class NodeTui {
 		void edit_action(TimedAction* action);
 		void edit_number(float& number);
 		void edit_string(char* input);
+		void edit_bool(bool& input, char* if_true, char* if_false);
 		void string(char* input);
 		void selectable_string(char* input);
 		void edit_bitflag(char* name, int flag, int& flagedit);
