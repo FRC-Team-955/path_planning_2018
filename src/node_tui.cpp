@@ -16,7 +16,7 @@ void NodeTui::init() {
 	curses_window = newwin(25, 50, 0, 0); //Create a new curses window TODO: Configurable size?
 }
 
-bool NodeTui::update() {
+bool NodeTui::update(std::vector<Node>& nodes) {
 	kbd_input_latest = getch();
 	if (kbd_input_latest != ERR) {
 		wclear(curses_window);
@@ -44,16 +44,16 @@ bool NodeTui::update() {
 				sel_horizontal++;
 				break;
 			case 'a': 
-				nodes->push_back({"New node", 1000.0, 1000.0, true});
+				nodes.push_back(Node());
 				break;
 		}
 		draw_vertical = 0;
 		draw_horizontal = 0;
-		auto node = nodes->begin();
-		while (node != nodes->end()) {
+		auto node = nodes.begin();
+		do {
 			next_line(1, 1);
 			if (pressed('d')) {
-				nodes->erase(node--);
+				nodes.erase(node--);
 			}
 			edit_bool(node->is_open, (char*)"[-]", (char*)"[+]");
 			edit_string(node->name);
@@ -64,7 +64,7 @@ bool NodeTui::update() {
 				next_line(0, 3);
 				wattrset(curses_window, am_selected() ? A_STANDOUT : !A_STANDOUT); //If selected, highlight
 				mvwprintw(curses_window, draw_vertical, draw_horizontal, "Actions:");
-				if (pressed('i')) {
+				if (pressed('i')) { //TODO: USE A REAL CONSTRUCTOR!!!
 					node->actions.push_back({0.0});
 				}
 				draw_idx_horizontal++;
@@ -115,8 +115,7 @@ bool NodeTui::update() {
 				string((char*)"reverse: ");
 				edit_bool(node->reverse, (char*)"true", (char*)"false");
 			}
-			node++;
-		}
+		} while (++node != nodes.end());
 		wattrset(curses_window, A_NORMAL);
 		wrefresh(curses_window);
 	}

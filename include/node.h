@@ -20,39 +20,30 @@ struct TimedAction {
 
 class Node {
 	public:
+		Node();
 		char name[256];
-
-		float length_in;
-		float length_out;
-
-		bool is_open;
-		
-		bool reverse;
-
-		cv::Point2f get_in_ctrlpt();
-		std::vector<TimedAction> actions;
-		float linger_time;
-
+		cv::Point2f position;
 		float speed_in;
 		float speed_center;
 		float speed_out;
-
-		cv::Point2f position;
-		
+		float length_in;
+		float length_out;
+		bool is_open;
+		bool reverse;
+		float linger_time;
 		float direction;
-
+		std::vector<TimedAction> actions;
+		cv::Point2f get_in_ctrlpt();
 		cv::Point2f get_out_ctrlpt();
 		cv::Point2f get_center_ctrlpt();
-
 		void set_in_ctrlpt(cv::Point2f new_position);
 		void set_out_ctrlpt(cv::Point2f new_position);
 		void set_center_ctrlpt(cv::Point2f new_position);
-
 		void set_closest_component(cv::Point2f new_position);
 		float get_distance_to_closest_component(cv::Point2f input_position);
-
 		ParametricOutput spline(Node* node, float j);
 		float speed_ramp(Node* node, float j);
+		// TODO:
 		// void serialize(JsonNode& node)
 		// Node(JsonNode& node)
 };

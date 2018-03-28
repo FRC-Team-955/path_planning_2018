@@ -8,13 +8,12 @@
 
 class NodeTui {
 	public:
-		NodeTui(std::vector<Node>* nodes) : nodes(nodes) {
+		NodeTui() {
 			init();
 		};
-		bool update();
+		bool update(std::vector<Node>& nodes);
 		~NodeTui();
 	private:
-		std::vector<Node>* nodes;
 		WINDOW *curses_window;
 
 		int sel_vertical = 0; //Selection y position

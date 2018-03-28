@@ -63,7 +63,7 @@ void NodeGui::init() {
 	glLineWidth(2);
 }
 
-void NodeGui::update() {
+void NodeGui::update(std::vector<Node>& nodes) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	bound(FD::field_bounds, 1000.0);
@@ -72,7 +72,7 @@ void NodeGui::update() {
 
 	float smalldist = 999999.0;
 	Node *tempnode;
-	auto node = nodes->begin();
+	auto node = nodes.begin();
 	do {
 		glColor3f(1.0, 1.0, 1.0);
 		draw_string(node->position, node->name);
@@ -86,7 +86,8 @@ void NodeGui::update() {
 		glVertex2f(node->position.x - sidelen, node->position.y + sidelen);
 		glEnd();
 
-		if (node < nodes->end() - 1) {
+		if (node < nodes.end() - 1) {
+			/*
 			glBegin(GL_LINES);
 			glVertex2f(node->position.x, node->position.y);
 			for (float i = 0; i < 1.0; i += 0.01) {
@@ -96,6 +97,23 @@ void NodeGui::update() {
 			}
 			glVertex2f((node + 1)->position.x, (node + 1)->position.y);
 			glEnd();
+			*/
+
+			glBegin(GL_LINES);
+			glVertex2f(node->position.x, node->position.y);
+			TankDrive::TankOutput output;
+			float i = 0;
+			long unsigned int iters = 0;
+			while (i < 1.0 && iters < 100000) {
+				i += TankDrive::evaluate(node->spline(&*(node + 1), i), output, node->speed_ramp(&*(node + 1), i), 100.0, 635.0);
+				glColor3f(0.0, output.motion.velocity_left, 0.0);
+				glVertex2f(output.left_position.x, output.left_position.y);
+				glVertex2f(output.right_position.x, output.right_position.y);
+				iters++;
+			}
+			glVertex2f((node + 1)->position.x, (node + 1)->position.y);
+			glEnd();
+
 		}
 
 		//TODO: Remove this macro, eww
@@ -118,7 +136,7 @@ void NodeGui::update() {
 			}
 		}
 #undef DRAW_SEGMENT
-	} while (++node != nodes->end());
+	} while (++node != nodes.end()); 
 
 	if (movednode && mouse_active_b) {
 		movednode->set_closest_component(mouse);

@@ -1,5 +1,19 @@
 #include <node.h>
 
+Node::Node() {
+	strcpy(name, "New Node");
+	position = cv::Point2f(100.0, 100.0);
+	speed_in = 1.0;
+	speed_center = 1.0;
+	speed_out = 1.0;
+	length_in = 100.0;
+	length_out = 100.0;
+	is_open = false;
+	reverse = false;
+	linger_time = 0.0;
+	float direction = M_PI / 2.0;
+}
+
 cv::Point2f Node::get_out_ctrlpt() {
 	return position + (cv::Point2f(cos(direction), sin(direction)) * length_out);
 }
@@ -48,7 +62,7 @@ float Node::get_distance_to_closest_component(cv::Point2f input_position) {
 }
 
 float Node::speed_ramp(Node* other, float j) {
-	return spline_f(
+	return Spline::spline_f(
 			this->speed_center,
 			this->speed_out,
 			other->speed_in,
@@ -56,7 +70,7 @@ float Node::speed_ramp(Node* other, float j) {
 }
 
 ParametricOutput Node::spline(Node* other, float j) {
-	return spline_par(
+	return Spline::spline_par(
 			this->get_center_ctrlpt(), 
 			this->get_out_ctrlpt(),
 			other->get_in_ctrlpt(),

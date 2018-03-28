@@ -11,24 +11,27 @@
 #include <opencv2/opencv.hpp>
 #include <field_dimensions.h>
 
+#include <parametric_output.h>
+#include <spline.h>
+#include <tank_drive.h>
+
 namespace FD = FieldDimension;
 class NodeGui {
 	public:
-		NodeGui(std::vector<Node>* nodes) : nodes(nodes) {
+		NodeGui() {
 			init();
 			we_are_blue = true;
 			config[0] = 'R';
 			config[1] = 'L';
 			config[2] = 'L';
 		};
-		void update();
+		void update(std::vector<Node>& nodes);
 	private:
 		cv::Point3f white = cv::Point3f (1.0, 1.0, 1.0);
 		cv::Point3f grey = cv::Point3f (0.8, 0.8, 0.8);
 		cv::Point3f red = cv::Point3f (1.0, 0.3, 0.3);
 		cv::Point3f blue = cv::Point3f (0.2, 0.5, 1.0);
 
-		std::vector<Node>* nodes;
 		void init();
 		void render_rect(cv::Rect2f input);
 		void color_by_3f(cv::Point3f rgb);
