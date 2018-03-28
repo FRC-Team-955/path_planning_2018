@@ -118,7 +118,7 @@ void NodeGui::update(std::vector<Node>& nodes) {
 	cv::Point2f last_right = node->position;
 	unsigned int iters = 0;
 	while (iters < 5000 && trav.next(output, 10.0)) {
-		if (iters > 0) {
+		if (iters > 1 && iters != 5000) {
 			color_by(output.motion.velocity_left);
 			glVertex2f(output.left_position.x, output.left_position.y);
 			glVertex2f(last_left.x, last_left.y);
