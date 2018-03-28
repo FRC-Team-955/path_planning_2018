@@ -5,12 +5,10 @@
 #include <node_gui.h>
 
 // TODO
+// Reverse paths
+// Traversal using iterators and time for actions
 // JSON serialization/deserialization
-// OpenGL/GLUT interface
 // Command line arg for file name (turns on tui..?)
-// Actually put the field and robot tank drive equations in
-// REAL TIME EDITING!!!!!!!
-// Nonblocking input
 
 
 int main() {
@@ -19,7 +17,7 @@ int main() {
 	nodes.push_back(Node());
 
 	NodeTui tui;
-	NodeGui gui;
+	NodeGui gui (635.0, (char*)"RLR", true);
 	while (tui.update(nodes)) {
 		gui.update(nodes);
 	}

@@ -63,6 +63,7 @@ void NodeGui::init() {
 	glLineWidth(2);
 }
 
+//TODO: Split this into smaller functions
 void NodeGui::update(std::vector<Node>& nodes) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -71,13 +72,11 @@ void NodeGui::update(std::vector<Node>& nodes) {
 	render_field();
 
 	float smalldist = 999999.0;
-	Node *tempnode;
+	Node *tempnode = nullptr;
 	auto node = nodes.begin();
 	do {
 		glColor3f(1.0, 1.0, 1.0);
-		draw_string(node->position, node->name);
 
-		glColor3f(1.0, 1.0, 1.0);
 		glBegin(GL_POLYGON);
 		const float sidelen = 25.0;
 		glVertex2f(node->position.x + sidelen, node->position.y + sidelen);
@@ -87,36 +86,29 @@ void NodeGui::update(std::vector<Node>& nodes) {
 		glEnd();
 
 		if (node < nodes.end() - 1) {
-			/*
-			glBegin(GL_LINES);
-			glVertex2f(node->position.x, node->position.y);
-			for (float i = 0; i < 1.0; i += 0.01) {
-				auto stitch = node->spline(&*(node + 1), i);
-				glVertex2f(stitch.position.x, stitch.position.y);
-				glVertex2f(stitch.position.x, stitch.position.y);
-			}
-			glVertex2f((node + 1)->position.x, (node + 1)->position.y);
-			glEnd();
-			*/
-
 			glBegin(GL_LINES);
 			TankDrive::TankOutput output;
-			float i = 0;
-			long unsigned int iters = 0;
-			while (i < 1.0 && iters < 100000) {
-				i += TankDrive::evaluate(node->spline(&*(node + 1), i), output, node->speed_ramp(&*(node + 1), i), 100.0, 635.0);
-				glColor3f(0.0, output.motion.velocity_left, 0.0);
-				glVertex2f(output.left_position.x, output.left_position.y);
-				glVertex2f(output.left_position.x, output.left_position.y);
+			cv::Point2f last_left = node->position;
+			cv::Point2f last_right = node->position;
+			float i = 0.01;
+			unsigned int iters = 0;
+			while (i < 1.0 && iters < 10000) {
+				i += TankDrive::evaluate(node->spline(&*(node + 1), i), output, node->speed_ramp(&*(node + 1), i), 10.0, wheel_distance);
+				if (iters > 0) {
+					color_by(output.motion.velocity_left);
+					glVertex2f(output.left_position.x, output.left_position.y);
+					glVertex2f(last_left.x, last_left.y);
 
-				glColor3f(0.0, output.motion.velocity_right, 0.0);
-				glVertex2f(output.right_position.x, output.right_position.y);
-				glVertex2f(output.right_position.x, output.right_position.y);
-				iters++;
+					color_by(output.motion.velocity_right);
+					glVertex2f(output.right_position.x, output.right_position.y);
+					glVertex2f(last_right.x, last_right.y);
+				}
+
+				last_left = output.left_position;
+				last_right = output.right_position;
 				iters++;
 			}
 			glEnd();
-
 		}
 
 		//TODO: Remove this macro, eww
@@ -139,12 +131,19 @@ void NodeGui::update(std::vector<Node>& nodes) {
 			}
 		}
 #undef DRAW_SEGMENT
+
+		glColor3f(1.0, 1.0, 1.0);
+		draw_string(node->position, node->name);
 	} while (++node != nodes.end()); 
 
-	if (movednode && mouse_active_b) {
-		movednode->set_closest_component(mouse);
-	} else if (tempnode) {
-		movednode = tempnode;
+	if (mouse_active_b) {
+		if (movednode) {
+			movednode->set_closest_component(mouse);
+		} else if (tempnode) {
+			movednode = tempnode;
+		} else {
+			movednode = nullptr;
+		}
 	} else {
 		movednode = nullptr;
 	}
@@ -248,4 +247,12 @@ void NodeGui::draw_string(cv::Point2f pos, char *input) {
 	size_t len = (int)strlen(input);
 	for (size_t i = 0; i < len; i++)
 		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, input[i]);
+}
+
+void NodeGui::color_by(float input) { //Green to black to red from 1.0 to 0.0 to -1.0 respectively
+	if (input > 0) {
+		glColor3f(0.0, input, 0.0);
+	} else {
+		glColor3f(fabs(input), 0.0, 0.0);
+	}
 }
