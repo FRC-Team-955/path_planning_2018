@@ -100,7 +100,6 @@ void NodeGui::update(std::vector<Node>& nodes) {
 			*/
 
 			glBegin(GL_LINES);
-			glVertex2f(node->position.x, node->position.y);
 			TankDrive::TankOutput output;
 			float i = 0;
 			long unsigned int iters = 0;
@@ -108,10 +107,14 @@ void NodeGui::update(std::vector<Node>& nodes) {
 				i += TankDrive::evaluate(node->spline(&*(node + 1), i), output, node->speed_ramp(&*(node + 1), i), 100.0, 635.0);
 				glColor3f(0.0, output.motion.velocity_left, 0.0);
 				glVertex2f(output.left_position.x, output.left_position.y);
+				glVertex2f(output.left_position.x, output.left_position.y);
+
+				glColor3f(0.0, output.motion.velocity_right, 0.0);
+				glVertex2f(output.right_position.x, output.right_position.y);
 				glVertex2f(output.right_position.x, output.right_position.y);
 				iters++;
+				iters++;
 			}
-			glVertex2f((node + 1)->position.x, (node + 1)->position.y);
 			glEnd();
 
 		}
