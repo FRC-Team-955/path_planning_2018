@@ -62,13 +62,11 @@ float TankDrive::evaluate(ParametricOutput parametric,
 bool TankDrive::Traversal::next(TankDrive::TankOutput &output, Action& action_out, float dt) {
 	time_this_node_start += dt;
 	time_s += dt;
-	/*
 	if (time_this_node_start >= actions->time) {
 		if (actions != current_node->actions.end() - 1)
 			actions++;
 	}
 	action_out = actions->action;
-	*/
 	index += TankDrive::evaluate(current_node->spline(next_node, index), output,
 			current_node->speed_ramp(next_node, index) *
 			(current_node->reverse ? -1.0 : 1.0),

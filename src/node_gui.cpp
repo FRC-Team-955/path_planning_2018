@@ -129,6 +129,10 @@ void NodeGui::update(std::vector<Node>& nodes) {
 				color_by(output.motion.velocity_right);
 				glVertex2f(output.right_position.x, output.right_position.y);
 				glVertex2f(last_right.x, last_right.y);
+
+				glColor3f(act & Action::Up, act & Action::Down, act & Action::Intake_Expel);
+				glVertex2f(output.center_position.x, output.center_position.y);
+				glVertex2f(last_center.x, last_center.y);
 			}
 
 			last_left = output.left_position;
