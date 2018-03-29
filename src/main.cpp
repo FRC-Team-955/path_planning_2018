@@ -30,16 +30,19 @@ int main(int argc, char** argv) {
 
 		load(nodes, filename);
 
-		TankDrive::Traversal trav (nodes.begin(), nodes.end(), 635.0);
+		TankDrive::Traversal trav (nodes.begin(), nodes.end(), 635.0 / 2.0);
 		TankDrive::TankOutput output;
 		NodeTui tui;
-		NodeGui gui (635.0, config, true);
+		NodeGui gui (635.0 / 2.0, config, true);
 		int lastsize = nodes.size();
 		while (tui.update(nodes)) {
 			gui.update(nodes, output);
 			Action out;
-			if (!trav.next(output, out, 30.0) || lastsize != nodes.size()) {
+			if (!trav.next(output, out, 30.0)) {
 				trav.reset();
+			}
+			if (lastsize != nodes.size()) {
+				 trav = TankDrive::Traversal(nodes.begin(), nodes.end(), 635.0 / 2.0);
 			}
 			lastsize = nodes.size();
 		}

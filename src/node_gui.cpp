@@ -104,7 +104,7 @@ void NodeGui::update(std::vector<Node>& nodes, TankDrive::TankOutput robot) {
 			draw_string(node->position, node->name);
 		} while (++node != nodes.end()); 
 
-		TankDrive::Traversal trav (nodes.begin(), nodes.end(), 635.0);
+		TankDrive::Traversal trav (nodes.begin(), nodes.end(), wheel_distance);
 		glBegin(GL_LINES);
 		TankDrive::TankOutput output;
 		Action act;
@@ -138,10 +138,10 @@ void NodeGui::update(std::vector<Node>& nodes, TankDrive::TankOutput robot) {
 	glColor3f(0.8, 0.8, 0.8);
 	glLineWidth(3);
 	std::vector<cv::Point2f> wireframe;
-	wireframe.push_back(cv::Point2f ((635.0), (635.0)));
-	wireframe.push_back(cv::Point2f (-(635.0), (635.0)));
-	wireframe.push_back(cv::Point2f (-(635.0), -(635.0)));
-	wireframe.push_back(cv::Point2f ((635.0), -(635.0)));
+	wireframe.push_back(cv::Point2f ((wheel_distance), (wheel_distance)));
+	wireframe.push_back(cv::Point2f (-(wheel_distance), (wheel_distance)));
+	wireframe.push_back(cv::Point2f (-(wheel_distance), -(wheel_distance)));
+	wireframe.push_back(cv::Point2f ((wheel_distance), -(wheel_distance)));
 
 	cv::Mat rot_mat( 2, 3, CV_32FC1 );
 	rot_mat = cv::getRotationMatrix2D(cv::Point2f(0.0, 0.0), -robot.robot_direction * (180.0 / acos(-1)), 1.0);
@@ -155,7 +155,7 @@ void NodeGui::update(std::vector<Node>& nodes, TankDrive::TankOutput robot) {
 		last = point;
 	}
 	glVertex2f(robot.center_position.x, robot.center_position.y);
-	glVertex2f(robot.center_position.x + (cos(robot.robot_direction) * (635.0)), robot.center_position.y + (sin(robot.robot_direction) * (635.0)));
+	glVertex2f(robot.center_position.x + (cos(robot.robot_direction) * (wheel_distance)), robot.center_position.y + (sin(robot.robot_direction) * (wheel_distance)));
 	glEnd();
 
 	if (mouse_active_b) {
