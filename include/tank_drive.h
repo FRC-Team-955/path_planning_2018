@@ -20,6 +20,7 @@ namespace TankDrive {
 		std::vector<Node>::iterator next_node;
 		std::vector<Node>::iterator end_node;
 		std::vector<TimedAction>::iterator actions;
+		float time_this_node_start;
 		float time_s;
 		float index;
 		float wheel_distance;
@@ -30,6 +31,6 @@ namespace TankDrive {
 				reset();
 			};
 		void reset();
-		bool next(TankDrive::TankOutput &output, float dt);
+		bool next(TankDrive::TankOutput &output, Action& out, float dt);
 	};
 } // namespace TankDrive

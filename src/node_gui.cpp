@@ -115,10 +115,12 @@ void NodeGui::update(std::vector<Node>& nodes) {
 		TankDrive::Traversal trav (nodes.begin(), nodes.end(), 635.0);
 		glBegin(GL_LINES);
 		TankDrive::TankOutput output;
+		Action act;
 		cv::Point2f last_left = node->position;
+		cv::Point2f last_center = node->position;
 		cv::Point2f last_right = node->position;
 		unsigned int iters = 0;
-		while (iters < 5000 && trav.next(output, 10.0)) {
+		while (iters < 5000 && trav.next(output, act, 10.0)) {
 			if (iters > 1 && iters != 5000) {
 				color_by(output.motion.velocity_left);
 				glVertex2f(output.left_position.x, output.left_position.y);
@@ -131,6 +133,7 @@ void NodeGui::update(std::vector<Node>& nodes) {
 
 			last_left = output.left_position;
 			last_right = output.right_position;
+			last_center = output.center_position;
 			iters++;
 		}
 		glEnd();
