@@ -20,6 +20,9 @@ struct TimedAction {
 class Node {
 	public:
 		Node();
+		Node(cv::FileNode input);
+		void save_to(cv::FileStorage& fs);
+
 		char name[256];
 		cv::Point2f position;
 		float speed_in;

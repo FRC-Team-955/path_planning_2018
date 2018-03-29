@@ -14,6 +14,52 @@ Node::Node() {
 	float direction = M_PI / 2.0;
 }
 
+Node::Node(cv::FileNode input) {
+	std::string string_name;
+	input["name"] >> string_name;
+	strcpy(name, string_name.c_str());
+#define ATTRIB(NAME) input[#NAME] >> NAME;
+	ATTRIB(position);
+	ATTRIB(speed_in);
+	ATTRIB(speed_out);
+	ATTRIB(speed_center);
+	ATTRIB(length_in);
+	ATTRIB(length_out);
+	ATTRIB(is_open);
+	ATTRIB(reverse);
+	ATTRIB(linger_time);
+	ATTRIB(direction);
+#undef ATTRIB
+	cv::FileNode actions_fn = input["actions"];
+	for (cv::FileNodeIterator action_it = actions_fn.begin(); action_it < actions_fn.end(); ++action_it) {
+		actions.push_back((TimedAction){(*action_it)["time"], (Action)(int)((*action_it)["action"])});
+	}
+}
+
+void Node::save_to( cv::FileStorage &fs ) {
+	fs << "{:";
+#define ATTRIB(NAME) fs << #NAME << NAME;
+	ATTRIB(name);
+	ATTRIB(position);
+	ATTRIB(speed_in);
+	ATTRIB(speed_out);
+	ATTRIB(speed_center);
+	ATTRIB(length_in);
+	ATTRIB(length_out);
+	ATTRIB(is_open);
+	ATTRIB(reverse);
+	ATTRIB(linger_time);
+	ATTRIB(direction);
+#undef ATTRIB
+	fs << "actions" << "[:";
+	for (auto& action : actions) {
+		fs << "{:" << "time" << action.time << "action" << action.action << "}";
+	}
+	fs << "]"; 
+
+	fs << "}";
+}
+
 cv::Point2f Node::get_out_ctrlpt() {
 	return position + (cv::Point2f(cos(direction), sin(direction)) * length_out);
 }
