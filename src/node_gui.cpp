@@ -64,7 +64,7 @@ void NodeGui::init() {
 }
 
 //TODO: Split this into smaller functions
-void NodeGui::update(std::vector<Node>& nodes) {
+void NodeGui::update(std::vector<Node>& nodes, TankDrive::TankOutput robot) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	bound(FD::field_bounds, 1000.0);
@@ -142,6 +142,29 @@ void NodeGui::update(std::vector<Node>& nodes) {
 		}
 		glEnd();
 	}
+
+	glColor3f(0.8, 0.8, 0.8);
+	glLineWidth(3);
+	std::vector<cv::Point2f> wireframe;
+	wireframe.push_back(cv::Point2f ((635.0), (635.0)));
+	wireframe.push_back(cv::Point2f (-(635.0), (635.0)));
+	wireframe.push_back(cv::Point2f (-(635.0), -(635.0)));
+	wireframe.push_back(cv::Point2f ((635.0), -(635.0)));
+
+	cv::Mat rot_mat( 2, 3, CV_32FC1 );
+	rot_mat = cv::getRotationMatrix2D(cv::Point2f(0.0, 0.0), -robot.robot_direction * (180.0 / acos(-1)), 1.0);
+	cv::transform(wireframe, wireframe, rot_mat);
+
+	cv::Point2f last = wireframe.back();
+	glBegin(GL_LINES);
+	for (auto& point : wireframe) {
+		glVertex2f(point.x + robot.center_position.x, point.y + robot.center_position.y);
+		glVertex2f(last.x + robot.center_position.x, last.y + robot.center_position.y);
+		last = point;
+	}
+	glVertex2f(robot.center_position.x, robot.center_position.y);
+	glVertex2f(robot.center_position.x + (cos(robot.robot_direction) * (635.0)), robot.center_position.y + (sin(robot.robot_direction) * (635.0)));
+	glEnd();
 
 	if (mouse_active_b) {
 		if (movednode) {

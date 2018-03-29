@@ -15,7 +15,7 @@ namespace TankDrive {
 	float evaluate(ParametricOutput parametric, TankOutput &output,
 			float max_velocity, float dt, float wheel_distance);
 	struct Traversal {
-		std::vector<Node>::iterator begin;
+		std::vector<Node>::iterator begin_node;
 		std::vector<Node>::iterator current_node;
 		std::vector<Node>::iterator next_node;
 		std::vector<Node>::iterator end_node;
@@ -24,10 +24,10 @@ namespace TankDrive {
 		float time_s;
 		float index;
 		float wheel_distance;
-		Traversal(std::vector<Node>::iterator begin, std::vector<Node>::iterator end,
+		Traversal(std::vector<Node>::iterator begin_node, std::vector<Node>::iterator end,
 				float wheel_distance)
-			: index(0.0), time_s(0.0), wheel_distance(wheel_distance), begin(begin),
-			end_node(end - 1) {
+			: index(0.0), time_s(0.0), wheel_distance(wheel_distance), begin_node(begin_node),
+			end_node(end) {
 				reset();
 			};
 		void reset();

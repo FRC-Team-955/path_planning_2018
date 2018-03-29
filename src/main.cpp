@@ -20,16 +20,33 @@ void load(std::vector<Node>& nodes, char* filename);
 int main(int argc, char** argv) {
 	std::vector<Node> nodes;
 
-	if (argc > 0) {
-		load(nodes, argv[1]);
+	if (argc >= 2) {
+		char config[3];
+		strncpy(config, argv[1], 3);
 
+		char filename[50];
+		strncpy(filename, config, 3);
+		strcat(filename, ".yml");
+
+		load(nodes, filename);
+
+		//TankDrive::Traversal trav (nodes.begin(), nodes.end(), 635.0);
+		TankDrive::TankOutput output;
 		NodeTui tui;
-		NodeGui gui (635.0, (char*)"RLR", true);
+		NodeGui gui (635.0, config, true);
+		int lastsize = nodes.size();
 		while (tui.update(nodes)) {
-			gui.update(nodes);
+			gui.update(nodes, output);
+			Action out;
+			//if (!trav.next(output, out, 30.0) || lastsize != nodes.size()) {
+			//	trav.reset();
+			//}
+			lastsize = nodes.size();
 		}
 
-		save(nodes, argv[1]);
+		save(nodes, filename);
+	} else {
+		std::cerr << "Usage: " << argv[0] << " <Field config> <IP>";
 	}
 
 }

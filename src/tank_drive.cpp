@@ -60,38 +60,44 @@ float TankDrive::evaluate(ParametricOutput parametric,
 }
 
 bool TankDrive::Traversal::next(TankDrive::TankOutput &output, Action& action_out, float dt) {
-	time_this_node_start += dt;
-	time_s += dt;
-	if (time_this_node_start >= actions->time) {
-		if (actions != current_node->actions.end() - 1)
-			actions++;
-	}
-	action_out = actions->action;
-	index += TankDrive::evaluate(current_node->spline(next_node, index), output,
-			current_node->speed_ramp(next_node, index) *
-			(current_node->reverse ? -1.0 : 1.0),
-			dt, wheel_distance);
-	if ((index > 1.0 && !current_node->reverse) ||
-			(index < 0.0 && current_node->reverse)) {
-		if (next_node != end_node) {
-			time_this_node_start = 0.0;
-			current_node = next_node;
-			next_node++;
-			index = (current_node)->reverse ? 1.0 : 0.0;
-			std::sort(current_node->actions.begin(), current_node->actions.end());
-			actions = current_node->actions.begin();
-		} else {
-			return false;
+	if (next_node != end_node && current_node != end_node) {
+		time_this_node_start += dt;
+		time_s += dt;
+		if (actions != current_node->actions.end()) {
+			if (time_this_node_start >= actions->time)
+				actions++;
+			action_out = actions->action;
 		}
+		index += TankDrive::evaluate(current_node->spline(next_node, index), output,
+				current_node->speed_ramp(next_node, index) *
+				(current_node->reverse ? -1.0 : 1.0),
+				dt, wheel_distance);
+		if ((index > 1.0 && !current_node->reverse) ||
+				(index < 0.0 && current_node->reverse)) {
+			if (next_node != end_node) {
+				time_this_node_start = 0.0;
+				current_node = next_node;
+				next_node++;
+				index = (current_node)->reverse ? 1.0 : 0.0;
+				std::sort(current_node->actions.begin(), current_node->actions.end());
+				actions = current_node->actions.begin();
+			} else {
+				return false;
+			}
+		}
+		return true;
+	} else {
+		return false;
 	}
-	return current_node != end_node;
 }
 
 void TankDrive::Traversal::reset() {
-	current_node = begin;
-	next_node = begin + 1;
-	index = (current_node)->reverse ? 1.0 : 0.0;
-	actions = current_node->actions.begin();
-	time_this_node_start = 0.0;
-	time_s = 0.0;
+	if (current_node != end_node) {
+		current_node = begin_node;
+		next_node = begin_node + 1;
+		index = (current_node)->reverse ? 1.0 : 0.0;
+		actions = current_node->actions.begin();
+		time_this_node_start = 0.0;
+		time_s = 0.0;
+	}
 }

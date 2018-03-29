@@ -23,8 +23,9 @@ class NodeGui {
 			we_are_blue(we_are_blue) {
 				strcpy(this->config, config);
 				init();
+				movednode = nullptr;
 			};
-		void update(std::vector<Node> &nodes);
+		void update(std::vector<Node>& nodes, TankDrive::TankOutput robot);
 
 	private:
 		cv::Point3f white = cv::Point3f(1.0, 1.0, 1.0);
