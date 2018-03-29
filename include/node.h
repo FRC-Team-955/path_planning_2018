@@ -6,13 +6,7 @@
 #include <parametric_output.h>
 #include <spline.h>
 #include <vector>
-
-enum Action {
-	Up = 1,
-	Down = 2,
-	Intake_Expel = 4,
-	Intake_In = 8,
-};
+#include <shared_network_types.h>
 
 struct TimedAction {
 	float time;

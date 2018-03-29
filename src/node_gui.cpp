@@ -130,7 +130,7 @@ void NodeGui::update(std::vector<Node>& nodes) {
 				glVertex2f(output.right_position.x, output.right_position.y);
 				glVertex2f(last_right.x, last_right.y);
 
-				glColor3f(act & Action::Up, act & Action::Down, act & Action::Intake_Expel);
+				glColor3f(act & Action::Cube_Expel, act & Action::Cube_Intake, (act & Action::Scissor_Scale) + (act & Action::Scissor_Switch));
 				glVertex2f(output.center_position.x, output.center_position.y);
 				glVertex2f(last_center.x, last_center.y);
 			}

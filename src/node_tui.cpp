@@ -80,10 +80,10 @@ bool NodeTui::update(std::vector<Node>& nodes) {
 								} else {
 									if (node->actions.size() > 0) {
 										edit_number(action->time);
-										edit_bitflag((char*)"Up", Action::Up, (int&)action->action);
-										edit_bitflag((char*)"Down", Action::Down, (int&)action->action);
-										edit_bitflag((char*)"Expel", Action::Intake_Expel, (int&)action->action);
-										edit_bitflag((char*)"In", Action::Intake_In, (int&)action->action);
+										edit_bitflag((char*)"Expel", Action::Cube_Expel, (int&)action->action);
+										edit_bitflag((char*)"Intake", Action::Cube_Intake, (int&)action->action);
+										edit_bitflag((char*)"Switch", Action::Scissor_Switch, (int&)action->action);
+										edit_bitflag((char*)"Scale", Action::Scissor_Scale, (int&)action->action);
 									}
 									++action;
 								}
