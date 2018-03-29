@@ -63,13 +63,13 @@ bool TankDrive::Traversal::next(TankDrive::TankOutput &output, Action& action_ou
 	if (next_node != end_node && current_node != end_node) {
 		time_this_node_start += dt;
 		time_s += dt;
-		/*
-			if (actions != current_node->actions.end()) {
+		if (actions != current_node->actions.end()) {
 			action_out = actions->action;
 			if (time_this_node_start >= actions->time)
-			actions++;
-			}
-			*/
+				actions++;
+		} else {
+			action_out = Action::None;
+		}
 		index += TankDrive::evaluate(current_node->spline(next_node, index), output,
 				current_node->speed_ramp(next_node, index) *
 				(current_node->reverse ? -1.0 : 1.0),
