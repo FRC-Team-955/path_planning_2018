@@ -43,6 +43,7 @@ int main(int argc, char** argv) {
  		rio = new SocketServer (5801);
 	}
 	
+	std::cout << "Waiting for setup" << std::endl;
 	if (ui_enable && !socket_enable) {
 		strncpy(setup_info.config, argv[1], 3);
 	} else {
@@ -72,10 +73,8 @@ int main(int argc, char** argv) {
 
 	int lastsize = nodes.size();
 	t1 = std::chrono::high_resolution_clock::now();
+	float ms = 10.0;
 	while (true) {
-		t2 = std::chrono::high_resolution_clock::now();
-		float ms = fabs(std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count());
-		t1 = t2;
 		if (socket_enable) {
 			if (!trav.next(tank_output, action_output, ms)) {
 				trav.reset();
@@ -101,6 +100,9 @@ int main(int argc, char** argv) {
 			rio->write_to(&output_command, sizeof(output_command));
 			rio->read_to(&input_command, sizeof(input_command)); 
 		}
+		t2 = std::chrono::high_resolution_clock::now();
+		ms = std::abs(std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count());
+		t1 = t2;
 	}
 	if (ui_enable) {
 		tui->~NodeTui();
