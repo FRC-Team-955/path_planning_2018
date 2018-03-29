@@ -79,6 +79,10 @@ int main(int argc, char** argv) {
 		if (socket_enable) {
 			if (!trav.next(tank_output, action_output, ms)) {
 				trav.reset();
+				output_command.type = RioCommand::Type::Stop;
+				std::cerr << "SENDING STOP" << std::endl;
+			} else {
+				output_command.type = RioCommand::Type::Motion;
 			}
 			if (lastsize != nodes.size()) {
 				trav = TankDrive::Traversal(nodes.begin(), nodes.end(), 635.0 / 2.0);
@@ -92,7 +96,6 @@ int main(int argc, char** argv) {
 			}
 		}
 		if (socket_enable) {
-			output_command.type = RioCommand::Type::Motion;
 			output_command.motion = tank_output.motion;
 			output_command.action = action_output;
 			rio->write_to(&output_command, sizeof(output_command));
