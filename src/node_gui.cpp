@@ -11,14 +11,6 @@ cv::Point2f mouse(0.0, 0.0);
 bool mouse_active_b = false;
 
 void mouse_adjust(int mx, int my) {
-	/*
-		my = glutGet(GLUT_WINDOW_HEIGHT) - my;
-		mouse.y =
-		(((double)my / (double)glutGet(GLUT_WINDOW_HEIGHT)) * FD::field_bounds.height) -
-		(FD::field_bounds.height / 2.0); mouse.x =
-		(((double)mx / (double)glutGet(GLUT_WINDOW_HEIGHT)) * FD::field_bounds.width) -
-		(FD::field_bounds.width / 2.0);
-		*/
 	GLint viewport[4];
 	GLdouble modelview[16], projection[16];
 	GLfloat wx = mx, wy, wz;
@@ -79,7 +71,7 @@ void NodeGui::update(std::vector<Node>& nodes, TankDrive::TankOutput robot) {
 			glColor3f(1.0, 1.0, 1.0);
 
 			glBegin(GL_POLYGON);
-			const float sidelen = 25.0;
+			const float sidelen = 50.0;
 			glVertex2f(node->position.x + sidelen, node->position.y + sidelen);
 			glVertex2f(node->position.x + sidelen, node->position.y - sidelen);
 			glVertex2f(node->position.x - sidelen, node->position.y - sidelen);

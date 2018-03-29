@@ -61,45 +61,14 @@ float Node::get_distance_to_closest_component(cv::Point2f input_position) {
 			cv::norm(get_center_ctrlpt() - input_position));
 }
 
-float Node::speed_ramp(Node& other, float j) {
-	if (reverse) {
-		return Spline::spline_f(
-				this->speed_center,
-				this->speed_in,
-				other.speed_out,
-				other.speed_center, j);
-	} else {
-		return Spline::spline_f(
-				this->speed_center,
-				this->speed_out,
-				other.speed_in,
-				other.speed_center, j);
-	}
-}
-
-ParametricOutput Node::spline(Node& other, float j) {
-	if (reverse) {
-		return Spline::spline_par(
-				this->get_center_ctrlpt(), 
-				this->get_in_ctrlpt(),
-				other.get_out_ctrlpt(),
-				other.get_center_ctrlpt(), j);
-	} else {
-		return Spline::spline_par(
-				this->get_center_ctrlpt(), 
-				this->get_out_ctrlpt(),
-				other.get_in_ctrlpt(),
-				other.get_center_ctrlpt(), j);
-	}
-}
-
 float Node::speed_ramp(std::vector<Node>::iterator other, float j) {
 	if (reverse) {
 		return Spline::spline_f(
-				this->speed_center,
-				this->speed_in,
+				other->speed_center, 
 				other->speed_out,
-				other->speed_center, j);
+				this->speed_in,
+				this->speed_center,
+				j);
 	} else {
 		return Spline::spline_f(
 				this->speed_center,
@@ -112,10 +81,11 @@ float Node::speed_ramp(std::vector<Node>::iterator other, float j) {
 ParametricOutput Node::spline(std::vector<Node>::iterator other, float j) {
 	if (reverse) {
 		return Spline::spline_par(
-				this->get_center_ctrlpt(), 
-				this->get_in_ctrlpt(),
+				other->get_center_ctrlpt(), 
 				other->get_out_ctrlpt(),
-				other->get_center_ctrlpt(), j);
+				this->get_in_ctrlpt(),
+				this->get_center_ctrlpt(), 
+				j);
 	} else {
 		return Spline::spline_par(
 				this->get_center_ctrlpt(), 

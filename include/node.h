@@ -42,9 +42,7 @@ class Node {
 		float get_distance_to_closest_component(cv::Point2f input_position);
 
 		ParametricOutput spline(std::vector<Node>::iterator node, float j);
-		ParametricOutput spline(Node& node, float j);
 		float speed_ramp(std::vector<Node>::iterator node, float j);
-		float speed_ramp(Node& node, float j);
 		// TODO:
 		// void serialize(JsonNode& node)
 		// Node(JsonNode& node)
