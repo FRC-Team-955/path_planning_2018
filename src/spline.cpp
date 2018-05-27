@@ -23,6 +23,6 @@ ParametricOutput Spline::spline_par(cv::Point2f a, cv::Point2f b, cv::Point2f c,
 }
 
 float Spline::spline_f(float a, float b, float c, float d, float t) {
-	return (powf(1 - t, 3.0) * a) + (3.0 * powf(1 - t, 2.0) * t * b) +
-		(3.0 * (1 - t) * powf(t, 2.0) * c) + (powf(t, 3.0) * d);
+  return (powf(1 - t, 3.0) * a) + (3.0 * powf(1 - t, 2.0) * t * b) +
+         (3.0 * (1 - t) * powf(t, 2.0) * c) + (powf(t, 3.0) * d);
 }

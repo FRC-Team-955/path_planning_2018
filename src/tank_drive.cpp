@@ -3,6 +3,7 @@
 float TankDrive::evaluate(ParametricOutput parametric,
 		TankDrive::TankOutput &output, float max_velocity,
 		float dt, float wheel_distance) {
+
 	// Position = center + (perpendicular vector * d)
 	output.center_position = parametric.position;
 	output.left_position =
@@ -49,10 +50,10 @@ float TankDrive::evaluate(ParametricOutput parametric,
 	// degrees of the trajectory of the robot center (It's reversing)
 	float direction_left = atan2(chage_pos_left.y, chage_pos_left.x);
 	float direction_right = atan2(chage_pos_right.y, chage_pos_right.x);
-	if (fabs(direction_left - output.robot_direction) > M_PI / 2.0)
+	if (parametric.velocity.dot(chage_pos_left) < 0)
 		output.motion.velocity_left *= -1.0;
 
-	if (fabs(direction_right - output.robot_direction) > M_PI / 2.0)
+	if (parametric.velocity.dot(chage_pos_right) < 0)
 		output.motion.velocity_right *= -1.0;
 
 	// How far along the spline we advanced

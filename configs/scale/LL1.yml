@@ -1,0 +1,27 @@
+%YAML:1.0
+---
+nodes:
+   - { name:A, position:[ 1.5094857177734375e+03, 4.7897143554687500e+02 ],
+       speed_in:1., speed_out:2., speed_center:2.,
+       length_in:3.7011425781250000e+02,
+       length_out:1.1176942138671875e+03, is_open:0, reverse:0,
+       linger_time:0., direction:1.5578100681304932e+00, actions:[ {
+       time:10000., action:2 } ] }
+   - { name:B, position:[ 9.5068572998046875e+02, 4.5139428710937500e+03 ],
+       speed_in:1.5000000000000000e+00, speed_out:1., speed_center:1.,
+       length_in:7.7580175781250000e+02,
+       length_out:8.2696392822265625e+02, is_open:0, reverse:0,
+       linger_time:0., direction:1.7561442852020264e+00, actions:[ {
+       time:4000., action:2 }, { time:10000., action:4 } ] }
+   - { name:C, position:[ 1.8433143310546875e+03, 7.9683427734375000e+03 ],
+       speed_in:5.0000000000000000e-01, speed_out:1.,
+       speed_center:8.0000001192092896e-01,
+       length_in:1.4542742919921875e+03,
+       length_out:1.9631477050781250e+03, is_open:0, reverse:1,
+       linger_time:0., direction:4.4356098771095276e-01, actions:[] }
+   - { name:D, position:[ 5.1525714111328125e+02, 7.3587426757812500e+03 ],
+       speed_in:1.0000000149011612e-01, speed_out:1.0000000149011612e-01,
+       speed_center:1.0000000149011612e-01,
+       length_in:7.1463513183593750e+02,
+       length_out:1.6580615234375000e+02, is_open:0, reverse:0,
+       linger_time:0., direction:4.0488994121551514e-01, actions:[] }

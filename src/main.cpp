@@ -67,7 +67,7 @@ int main(int argc, char** argv) {
 	NodeTui* tui;
 	NodeGui* gui;
 	if (ui_enable) {
-		gui = new NodeGui(635.0 / 2.0, setup_info.config, true);
+		gui = new NodeGui(635.0 / 2.0, setup_info.config, false);
 		tui = new NodeTui();
 	}
 
@@ -83,11 +83,11 @@ int main(int argc, char** argv) {
 			} else {
 				output_command.type = RioCommand::Type::Motion;
 			}
-			if (lastsize != nodes.size()) {
-				trav = TankDrive::Traversal(nodes.begin(), nodes.end(), 635.0 / 2.0);
-			}
 		}
-		lastsize = nodes.size();
+		//if (lastsize != nodes.size()) {
+		//	trav = TankDrive::Traversal(nodes.begin(), nodes.end(), 635.0 / 2.0);
+		//}
+		//lastsize = nodes.size();
 		if (ui_enable) {
 			gui->update(nodes, tank_output);
 			if (!tui->update(nodes)) {

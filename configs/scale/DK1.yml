@@ -1,0 +1,11 @@
+%YAML:1.0
+---
+nodes:
+   - { name:A, position:[ 1000., 1000. ], speed_in:1., speed_out:1.,
+       speed_center:2.5000000000000000e-01, length_in:1., length_out:1.,
+       is_open:1, reverse:0, linger_time:0.,
+       direction:1.5700000524520874e+00, actions:[] }
+   - { name:B, position:[ 1000., 2000. ], speed_in:1., speed_out:1.,
+       speed_center:2.5000000000000000e-01, length_in:1., length_out:1.,
+       is_open:1, reverse:0, linger_time:0.,
+       direction:1.5700000524520874e+00, actions:[] }
